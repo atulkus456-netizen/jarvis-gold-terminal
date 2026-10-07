@@ -22,7 +22,7 @@ st.sidebar.info("⚡ SMC/ICT Core Live Scanner Activated\n\n🔑 API Key Status:
 st.markdown("<h1>🤖 JARVIS GOLD TERMINAL</h1>", unsafe_allow_html=True)
 st.write("---")
 
-# Exact Pre-configured Gemini API Key Without Splitting
+# Pre-configured Gemini API Key
 HARDCODED_API_KEY = "AIzaSyAQ.Ab8RN6Lb8HMmUlezqraWRScwCwrmtY3Olmmd-X2xlLMLZshADg"
 
 # 2. Multi-Upload System
@@ -43,8 +43,8 @@ if uploaded_files:
         leverage = st.slider("Leverage:", min_value=1, max_value=15, value=5, step=1)
         capital = st.number_input("Enter Capital:", min_value=100.0, value=9000.0)
     with col3:
-        rr_ratio = st.selectbox("Select Target RR:", ["1:1", "1:2", "1:3", "1:4", "1:5", "1:6", "1:7", "1:8", "1:9", "1:10"], index=2)
-        rr_value = int(rr_ratio.split(":"))
+        # Simplest way: Direct numerical choice to completely avoid .split() error
+        rr_value = st.selectbox("Select Target Risk-Reward (RR) Ratio (1:X):", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], index=2)
 
     if st.button("🚀 ANALYZE REAL MARKET STRUCTURE"):
         try:
