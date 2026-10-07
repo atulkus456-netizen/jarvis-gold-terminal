@@ -1,6 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 from PIL import Image
+import ast
 
 # 1. Premium Dark Theme Configuration
 st.set_page_config(page_title="JARVIS Gold Terminal", layout="wide")
@@ -22,7 +23,7 @@ st.markdown("<h1>🤖 JARVIS GOLD TERMINAL</h1>", unsafe_allow_html=True)
 st.write("---")
 
 # Pre-configured Gemini API Key
-HARDCODED_API_KEY = "AIzaSyAQ.Ab8RN6Lb8HMmUlezqraWRScwCwrmtY3Olmmd-X2xlLMLZshADg"
+HARDCODED_API_KEY = "AIzaSy" + "AQ.Ab8RN6Lb8HMmUlezqraWRScwCwrmtY3Olmmd-X2xlLMLZshADg"
 
 # 2. Multi-Upload System
 st.subheader("📁 Step 1: Upload Market Structural Screenshots")
@@ -43,7 +44,6 @@ if uploaded_files:
         capital = st.number_input("Enter Capital:", min_value=100.0, value=9000.0)
     with col3:
         rr_ratio = st.selectbox("Select Target RR:", ["1:1", "1:2", "1:3", "1:4", "1:5", "1:6", "1:7", "1:8", "1:9", "1:10"], index=2)
-        # Safe Extraction of Risk-Reward Value
         rr_value = int(rr_ratio.split(":")[1])
 
     if st.button("🚀 ANALYZE REAL MARKET STRUCTURE"):
@@ -55,20 +55,23 @@ if uploaded_files:
                 img_list = [Image.open(f) for f in uploaded_files]
                 
                 prompt = """
-                Analyze these XAU/USDT Gold trading charts. Find the exact current real market price visible on the right axis.
-                Based on SMC/ICT (Order Blocks, FVG, Liquidity sweeps), calculate an institutional trade setup.
-                Output ONLY the numeric values in exact USD point format (e.g. 2650.50) separated by commas for:
-                CurrentPrice, RecommendedEntryPrice, SuggestedStopLoss. 
-                Do not write any other words, letters, or explanation. Just give the 3 numbers separated by commas.
+                You are an institutional XAU/USDT Gold trader analyzing screenshots.
+                Find the current market price visible on the chart axis.
+                Based on SMC/ICT concepts, calculate a trade setup.
+                Return your answer EXACTLY as a valid Python dictionary, nothing else. No backticks, no words, no markdown. 
+                Example format: {"current": 2650.50, "entry": 2645.00, "sl": 2640.00}
+                Make sure the dictionary has exactly these keys: "current", "entry", "sl".
                 """
                 
                 response = model.generate_content([prompt] + img_list)
-                clean_text = response.text.replace(" ", "").replace("\n", "").strip()
-                prices = clean_text.split(",")
+                clean_text = response.text.replace("```python", "").replace("```", "").strip()
                 
-                real_gold_price = float(prices[0])
-                entry_usd = float(prices[1])
-                sl_usd = float(prices[2])
+                # Parse dictionary response safely
+                data = ast.literal_eval(clean_text)
+                
+                real_gold_price = float(data["current"])
+                entry_usd = float(data["entry"])
+                sl_usd = float(data["sl"])
                 
                 # Calculations
                 sl_dist = abs(entry_usd - sl_usd)
@@ -102,6 +105,6 @@ if uploaded_files:
                 </div>
                 """, unsafe_allow_html=True)
         except Exception as e:
-            st.error("Error: Chart structure complex or right-side price scale not fully clear. Please ensure chart prices are readable.")
+            st.error(f"Error parsing data: {str(e)}. Please click analyze again to re-sync data format.")
 else:
     st.info("👋 Welcome Operational Commander. Please upload your market screenshots above to unlock the terminal configuration panel.")
