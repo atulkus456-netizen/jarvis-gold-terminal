@@ -1,16 +1,6 @@
 import streamlit as st
-import subprocess
-import sys
-import os
-
-# Automatic Package Installer (Taki requirements.txt ka jhanjhat hi khatam ho jaye)
-try:
-    import google.generativeai as genai
-    from PIL import Image
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "google-generativeai", "Pillow"])
-    import google.generativeai as genai
-    from PIL import Image
+import google.generativeai as genai
+from PIL import Image
 
 # 1. Premium Dark Theme Configuration
 st.set_page_config(page_title="JARVIS Gold Terminal", layout="wide")
@@ -31,8 +21,8 @@ st.sidebar.info("⚡ SMC/ICT Core Live Scanner Activated\n\n🔑 API Key Status:
 st.markdown("<h1>🤖 JARVIS GOLD TERMINAL</h1>", unsafe_allow_html=True)
 st.write("---")
 
-# Pre-configured Gemini API Key (Tumhari Key)
-HARDCODED_API_KEY = "AIzaSy" + "AQ.Ab8RN6Lb8HMmUlezqraWRScwCwrmtY3Olmmd-X2xlLMLZshADg"
+# Pre-configured Gemini API Key
+HARDCODED_API_KEY = "AIzaSyAQ.Ab8RN6Lb8HMmUlezqraWRScwCwrmtY3Olmmd-X2xlLMLZshADg"
 
 # 2. Multi-Upload System
 st.subheader("📁 Step 1: Upload Market Structural Screenshots")
@@ -52,8 +42,9 @@ if uploaded_files:
         leverage = st.slider("Leverage:", min_value=1, max_value=15, value=5, step=1)
         capital = st.number_input("Enter Capital:", min_value=100.0, value=9000.0)
     with col3:
-        rr_ratio = st.selectbox("Select Target RR:", [f"1:{i}" for i in range(1, 11)], index=2)
-        rr_value = int(rr_ratio.split(":"))
+        rr_ratio = st.selectbox("Select Target RR:", ["1:1", "1:2", "1:3", "1:4", "1:5", "1:6", "1:7", "1:8", "1:9", "1:10"], index=2)
+        # Safe Extraction of Risk-Reward Value
+        rr_value = int(rr_ratio.split(":")[1])
 
     if st.button("🚀 ANALYZE REAL MARKET STRUCTURE"):
         try:
