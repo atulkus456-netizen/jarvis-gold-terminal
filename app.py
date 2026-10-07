@@ -17,13 +17,13 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.sidebar.markdown("# 🧠 JARVIS Intelligence")
-st.sidebar.info("⚡ SMC/ICT Core Live Scanner Activated\n\n🔑 API Key Status: PRE-CONFIGURED & ACTIVE")
+st.sidebar.info("⚡ SMC/ICT Core Live Scanner Activated\n\n🔑 API Key Status: FIXED & ACTIVE")
 
 st.markdown("<h1>🤖 JARVIS GOLD TERMINAL</h1>", unsafe_allow_html=True)
 st.write("---")
 
-# Pre-configured Gemini API Key
-HARDCODED_API_KEY = "AIzaSy" + "AQ.Ab8RN6Lb8HMmUlezqraWRScwCwrmtY3Olmmd-X2xlLMLZshADg"
+# Exact Pre-configured Gemini API Key Without Splitting
+HARDCODED_API_KEY = "AIzaSyAQ.Ab8RN6Lb8HMmUlezqraWRScwCwrmtY3Olmmd-X2xlLMLZshADg"
 
 # 2. Multi-Upload System
 st.subheader("📁 Step 1: Upload Market Structural Screenshots")
@@ -44,7 +44,7 @@ if uploaded_files:
         capital = st.number_input("Enter Capital:", min_value=100.0, value=9000.0)
     with col3:
         rr_ratio = st.selectbox("Select Target RR:", ["1:1", "1:2", "1:3", "1:4", "1:5", "1:6", "1:7", "1:8", "1:9", "1:10"], index=2)
-        rr_value = int(rr_ratio.split(":")[1])
+        rr_value = int(rr_ratio.split(":"))
 
     if st.button("🚀 ANALYZE REAL MARKET STRUCTURE"):
         try:
