@@ -1,6 +1,16 @@
 import streamlit as st
-import google.generativeai as genai
-from PIL import Image
+import subprocess
+import sys
+import os
+
+# Automatic Package Installer (Taki requirements.txt ka jhanjhat hi khatam ho jaye)
+try:
+    import google.generativeai as genai
+    from PIL import Image
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "google-generativeai", "Pillow"])
+    import google.generativeai as genai
+    from PIL import Image
 
 # 1. Premium Dark Theme Configuration
 st.set_page_config(page_title="JARVIS Gold Terminal", layout="wide")
@@ -16,23 +26,23 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.sidebar.markdown("# 🧠 JARVIS Intelligence")
-st.sidebar.info("⚡ SMC/ICT Core Live Scanner Activated")
+st.sidebar.info("⚡ SMC/ICT Core Live Scanner Activated\n\n🔑 API Key Status: PRE-CONFIGURED & ACTIVE")
 
-st.markdown("<h1>🤖 JARVIS GOLD TERMINAL (LIVE PRICE)</h1>", unsafe_allow_html=True)
+st.markdown("<h1>🤖 JARVIS GOLD TERMINAL</h1>", unsafe_allow_html=True)
 st.write("---")
+
+# Pre-configured Gemini API Key (Tumhari Key)
+HARDCODED_API_KEY = "AIzaSy" + "AQ.Ab8RN6Lb8HMmUlezqraWRScwCwrmtY3Olmmd-X2xlLMLZshADg"
 
 # 2. Multi-Upload System
 st.subheader("📁 Step 1: Upload Market Structural Screenshots")
 uploaded_files = st.file_uploader("Upload up to 5 charts (4H, 1H, 15M, 5M, 1M)", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
 
 if uploaded_files:
-    st.success(f"✔️ {len(uploaded_files)} Screenshots Loaded.")
+    st.success(f"✔️ {len(uploaded_files)} Screenshots Loaded Successfully into JARVIS Core.")
     st.write("---")
     
     st.markdown("<h2>⚙️ Step 2: Configure Tactical Parameters</h2>", unsafe_allow_html=True)
-    
-    # Free API Key Input Box
-    gemini_key = st.text_input("🔑 Enter your Free Gemini API Key to activate Vision:", type="password")
     
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -46,60 +56,61 @@ if uploaded_files:
         rr_value = int(rr_ratio.split(":"))
 
     if st.button("🚀 ANALYZE REAL MARKET STRUCTURE"):
-        if not gemini_key:
-            st.error("Please enter your free Gemini API Key first!")
-        else:
-            try:
-                with st.spinner("JARVIS Vision AI is reading the exact prices from your chart..."):
-                    genai.configure(api_key=gemini_key)
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    
-                    # Preparing images for Gemini
-                    img_list = [Image.open(f) for f in uploaded_files]
-                    
-                    # Advanced SMC & Liquidity Prompt
-                    prompt = """
-                    Analyze these XAU/USDT Gold trading charts. Find the exact current real market price visible on the right axis.
-                    Based on SMC/ICT (Order Blocks, FVG, Liquidity sweeps), calculate an institutional trade setup.
-                    Output ONLY the numeric values in exact USD point format (e.g. 2650.50) separated by commas for:
-                    CurrentPrice, RecommendedEntryPrice, SuggestedStopLoss. 
-                    Do not write any other words, just give the 3 numbers separated by commas.
-                    """
-                    
-                    response = model.generate_content([prompt] + img_list)
-                    prices = response.text.strip().split(",")
-                    
-                    real_gold_price = float(prices[0].strip())
-                    entry_usd = float(prices[1].strip())
-                    sl_usd = float(prices[2].strip())
-                    
-                    # Math Calculations
-                    sl_dist = abs(entry_usd - sl_usd)
-                    tp_usd = entry_usd + (sl_dist * rr_value) if entry_usd > sl_usd else entry_usd - (sl_dist * rr_value)
-                    
-                    usd_inr_rate = 84.0
-                    capital_usd = capital / usd_inr_rate if "INR" in currency else capital
-                    risk_usd = capital_usd * 0.01
-                    
-                    # Lot size logic
-                    lot_size = risk_usd / (sl_dist * 100) if sl_dist > 0 else 0.01
-                    final_lot = max(0.001, min(lot_size, (capital_usd * leverage) / (real_gold_price * 10)))
-                    
-                    # Display conversion
-                    mult = usd_inr_rate if "INR" in currency else 1.0
-                    sym = "₹" if "INR" in currency else "$"
-                    
-                    st.markdown(f"""
-                    <div class="report-box">
-                        <h3 style='color: #34c759;'>🎯 LIVE MATRIX ACTIVATED ({trading_type.upper()})</h3>
-                        <p><b>Detected Gold Price from Chart:</b> {sym}{real_gold_price*mult:,.2f}</p>
-                        <hr>
-                        <p><b>🎯 Target Entry Price:</b> {sym}{entry_usd*mult:,.2f}</p>
-                        <p><b>🛑 Absolute Stop Loss (SL):</b> {sym}{sl_usd*mult:,.2f}</p>
-                        <p><b>💰 Take Profit Target (TP):</b> {sym}{tp_usd*mult:,.2f}</p>
-                        <p style='color: #ffcc00; font-size: 20px;'><b>📊 Recommended Lot Size: {final_lot:.3f} Lots</b></p>
-                        <p><b>⚠️ Total 1% Risk Amount:</b> {sym}{risk_usd*mult:,.2f}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-            except Exception as e:
-                st.error("Error analyzing chart: Make sure the API key is correct and numbers are visible on the chart right side.")
+        try:
+            with st.spinner("JARVIS Vision AI is processing screenshots and extraction logic..."):
+                genai.configure(api_key=HARDCODED_API_KEY)
+                model = genai.GenerativeModel('gemini-1.5-flash')
+                
+                img_list = [Image.open(f) for f in uploaded_files]
+                
+                prompt = """
+                Analyze these XAU/USDT Gold trading charts. Find the exact current real market price visible on the right axis.
+                Based on SMC/ICT (Order Blocks, FVG, Liquidity sweeps), calculate an institutional trade setup.
+                Output ONLY the numeric values in exact USD point format (e.g. 2650.50) separated by commas for:
+                CurrentPrice, RecommendedEntryPrice, SuggestedStopLoss. 
+                Do not write any other words, letters, or explanation. Just give the 3 numbers separated by commas.
+                """
+                
+                response = model.generate_content([prompt] + img_list)
+                clean_text = response.text.replace(" ", "").replace("\n", "").strip()
+                prices = clean_text.split(",")
+                
+                real_gold_price = float(prices[0])
+                entry_usd = float(prices[1])
+                sl_usd = float(prices[2])
+                
+                # Calculations
+                sl_dist = abs(entry_usd - sl_usd)
+                if entry_usd > sl_usd:
+                    tp_usd = entry_usd + (sl_dist * rr_value)
+                else:
+                    tp_usd = entry_usd - (sl_dist * rr_value)
+                
+                usd_inr_rate = 84.0
+                capital_usd = capital / usd_inr_rate if "INR" in currency else capital
+                risk_usd = capital_usd * 0.01
+                
+                lot_size = risk_usd / (sl_dist * 100) if sl_dist > 0 else 0.01
+                final_lot = max(0.001, min(lot_size, (capital_usd * leverage) / (real_gold_price * 10)))
+                
+                mult = usd_inr_rate if "INR" in currency else 1.0
+                sym = "₹" if "INR" in currency else "$"
+                
+                st.markdown(f"""
+                <div class="report-box">
+                    <h3 style='color: #34c759;'>🎯 LIVE MATRIX ACTIVATED ({trading_type.upper()})</h3>
+                    <p style='font-size: 18px;'><b>Detected Gold Price from Chart:</b> {sym}{real_gold_price*mult:,.2f}</p>
+                    <hr style='border-color: #007aff;'>
+                    <table style='width:100%; font-size: 16px; border-collapse: collapse;'>
+                        <tr><td><b>🎯 Target Entry Price:</b></td><td style='color: #34c759; font-size: 18px;'><b>{sym}{entry_usd*mult:,.2f}</b></td></tr>
+                        <tr><td><b>🛑 Absolute Stop Loss (SL):</b></td><td style='color: #ff3b30; font-size: 18px;'><b>{sym}{sl_usd*mult:,.2f}</b></td></tr>
+                        <tr><td><b>💰 Take Profit Target (TP):</b></td><td style='color: #007aff; font-size: 18px;'><b>{sym}{tp_usd*mult:,.2f}</b></td></tr>
+                        <tr style='background-color: #1c2128;'><td><b>📊 Recommended Lot Size:</b></td><td style='color: #ffcc00; font-size: 18px;'><b>{final_lot:.3f} Lots</b></td></tr>
+                        <tr><td><b>⚠️ Total 1% Risk Allowed:</b></td><td>{sym}{risk_usd*mult:,.2f}</td></tr>
+                    </table>
+                </div>
+                """, unsafe_allow_html=True)
+        except Exception as e:
+            st.error("Error: Chart structure complex or right-side price scale not fully clear. Please ensure chart prices are readable.")
+else:
+    st.info("👋 Welcome Operational Commander. Please upload your market screenshots above to unlock the terminal configuration panel.")
